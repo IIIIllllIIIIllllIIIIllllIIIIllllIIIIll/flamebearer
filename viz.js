@@ -2,6 +2,7 @@
 
 const introEl = document.getElementById('intro');
 const searchEl = document.getElementById('search');
+const matchPctEl = document.getElementById('matchpct')
 const highlightEl = document.getElementById('highlight');
 const tooltipEl = document.getElementById('tooltip');
 const canvas = document.getElementById('canvas');
@@ -187,7 +188,7 @@ function render(dumpIntervals) {
     }
     const ratio = numTicksMatched / numTicks;
     const percent = Math.round(10000 * ratio) / 100;
-    console.log(`${numTicksMatched} ticks = ${percent}% matched`);
+    matchPctEl.innerHTML = `${numTicksMatched} ticks = ${percent}% matched`;
 }
 
 // pixel coordinates to bar coordinates in the levels array
