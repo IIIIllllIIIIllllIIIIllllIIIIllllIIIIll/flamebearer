@@ -84,7 +84,8 @@ function tickToX(i) {
     return (i - numTicks * rangeMin) * pxPerTick;
 }
 
-function render() {
+function render(dumpIntervals) {
+
     if (!levels) return;
 
     graphWidth = canvas.width = canvas.clientWidth;
@@ -103,6 +104,12 @@ function render() {
     ctx.font = '10px Tahoma, sans-serif';
     ctx.strokeStyle = 'white';
 
+    let intervals = [];
+
+    for (let x = 0; x <= numTicks; x++) {
+        intervals.push(false);
+    }
+
     for (let i = 0; i < levels.length - topLevel; i++) {
         const level = levels[topLevel + i];
 
@@ -113,6 +120,17 @@ function render() {
             let numBarTicks = level[j + 1];
 
             const inQuery = query && (names[level[j + 2]].indexOf(query) >= 0) || false;
+
+            if (inQuery) {
+                const xTickStart = barIndex - numTicks * rangeMin;
+                const xTickEnd = xTickStart + numBarTicks;
+                for (let x = xTickStart; x <= xTickEnd; x++) {
+                    intervals[x] = true;
+                }
+                if (dumpIntervals) {
+                    console.log(`(${xTickStart}, ${xTickEnd})`);
+                }
+            }
 
             // merge very small blocks into big "collapsed" ones for performance
             const collapsed = numBarTicks * pxPerTick <= collapseThreshold;
@@ -162,6 +180,14 @@ function render() {
             }
         }
     }
+
+    let numTicksMatched = 0;
+    for (let x = 0; x <= numTicks; x++) {
+        if (intervals[x]) numTicksMatched++;
+    }
+    const ratio = numTicksMatched / numTicks;
+    const percent = Math.round(10000 * ratio) / 100;
+    console.log(`${numTicksMatched} ticks = ${percent}% matched`);
 }
 
 // pixel coordinates to bar coordinates in the levels array
